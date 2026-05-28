@@ -1,6 +1,3 @@
-"""
-Coding Agent — generates or edits code in any language given a subtask.
-"""
 from __future__ import annotations
 
 import re

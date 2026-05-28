@@ -180,7 +180,6 @@ _router: Optional[LLMRouter] = None
 
 
 def get_router() -> LLMRouter:
-    """Return the shared router instance, creating it on first call."""
     global _router
     if _router is None:
         _router = LLMRouter()

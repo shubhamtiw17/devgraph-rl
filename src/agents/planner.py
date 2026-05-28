@@ -1,7 +1,3 @@
-"""
-Planner Agent — decomposes a high-level task into ordered subtasks.
-Uses Pydantic for strict JSON validation of LLM output.
-"""
 from __future__ import annotations
 
 import json
@@ -11,7 +7,6 @@ from src.agents.base_agent import BaseAgent, AgentContext, AgentResult
 
 
 class PlannerOutput(BaseModel):
-    """Strict schema for planner JSON output."""
     subtasks: list[str]
 
 

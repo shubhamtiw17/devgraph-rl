@@ -1,7 +1,3 @@
-"""
-Tests for the agent layer.
-All LLM calls are mocked — no API keys needed.
-"""
 from __future__ import annotations
 
 import pytest
@@ -128,7 +124,6 @@ def test_planner_fallback_on_bad_json(context, mock_router):
 
 
 def test_planner_filters_irrelevant_history(mock_router):
-    """Planner should only use architect/reviewer history, not coder history."""
     mock_router.complete.return_value = '{"subtasks": ["do thing"]}'
     ctx = AgentContext(
         repo_path="/repo",
@@ -243,7 +238,6 @@ def test_coding_extracts_java_block(mock_router):
 
 
 def test_coding_fallback_any_fence(mock_router):
-    """Falls back to any fenced block if exact language not found."""
     ctx = AgentContext(repo_path="/repo", task="fix bug", language="python")
     mock_router.complete.return_value = (
         "```\ndef fix(): pass\n```"
@@ -256,7 +250,6 @@ def test_coding_fallback_any_fence(mock_router):
 
 
 def test_coding_fallback_no_fences(context, mock_router):
-    """Falls back to raw response when no fences present."""
     mock_router.complete.return_value = "def validate(x):\n    return x is not None"
     agent = CodingAgent()
     agent.router = mock_router
@@ -266,7 +259,6 @@ def test_coding_fallback_no_fences(context, mock_router):
 
 
 def test_coding_filters_irrelevant_history(mock_router):
-    """Coder should only use planner/architect history, not debug/testing."""
     mock_router.complete.return_value = "```python\npass\n```"
     ctx = AgentContext(
         repo_path="/repo",
@@ -320,7 +312,6 @@ def test_coding_includes_target_file(mock_router):
 
 
 def test_agent_error_handling(context, mock_router):
-    """Router throws — agent returns failure result, never crashes."""
     mock_router.complete.side_effect = Exception("network error")
     agent = CodingAgent()
     agent.router = mock_router
