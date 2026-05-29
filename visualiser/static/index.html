@@ -15,6 +15,7 @@
     --border:     #1E2D45;
     --accent:     #00E5FF;
     --accent2:    #F4913A;
+    --accent3:    #A855F7;
     --text:       #E2E8F0;
     --text-dim:   #64748B;
     --text-muted: #334155;
@@ -37,6 +38,8 @@
     font-family: var(--font-mono);
     min-height: 100vh;
     overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
   }
 
   /* ── Header ── */
@@ -44,12 +47,14 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 1.25rem 2rem;
+    padding: 0.9rem 2rem;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
     position: sticky;
     top: 0;
     z-index: 100;
+    flex-wrap: wrap;
+    gap: 0.75rem;
   }
 
   .logo {
@@ -58,15 +63,52 @@
     font-size: 1.1rem;
     letter-spacing: -0.02em;
     color: var(--accent);
+    white-space: nowrap;
   }
   .logo span { color: var(--text-dim); font-weight: 400; }
 
-  .lang-selector {
+  /* ── Repo input ── */
+  .repo-bar {
     display: flex;
-    gap: 0.5rem;
     align-items: center;
+    gap: 0.5rem;
+    flex: 1;
+    max-width: 520px;
+    min-width: 200px;
   }
+  .repo-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    padding: 0.45rem 0.75rem;
+    transition: border-color 0.15s;
+  }
+  .repo-input:focus { outline: none; border-color: var(--accent); }
+  .repo-input::placeholder { color: var(--text-muted); }
 
+  .repo-load-btn {
+    padding: 0.45rem 1rem;
+    background: var(--accent);
+    border: none;
+    border-radius: 4px;
+    color: var(--bg);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .repo-load-btn:hover    { background: #00c4db; }
+  .repo-load-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .header-right { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+  .lang-selector { display: flex; gap: 0.5rem; align-items: center; }
   .lang-btn {
     padding: 0.4rem 1rem;
     border: 1px solid var(--border);
@@ -80,12 +122,29 @@
     letter-spacing: 0.05em;
     text-transform: uppercase;
   }
-  .lang-btn:hover   { border-color: var(--accent); color: var(--accent); }
-  .lang-btn.active  { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+  .lang-btn:hover  { border-color: var(--accent); color: var(--accent); }
+  .lang-btn.active { background: var(--accent); border-color: var(--accent); color: var(--bg); font-weight: 600; }
+
+  .view-tabs { display: flex; gap: 0.5rem; }
+  .view-tab {
+    padding: 0.4rem 1.1rem;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-dim);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+  .view-tab:hover  { border-color: var(--accent3); color: var(--accent3); }
+  .view-tab.active { background: var(--accent3); border-color: var(--accent3); color: #fff; font-weight: 600; }
 
   /* ── Status bar ── */
   #status-bar {
-    padding: 0.6rem 2rem;
+    padding: 0.5rem 2rem;
     font-size: 0.7rem;
     color: var(--text-dim);
     border-bottom: 1px solid var(--border);
@@ -93,7 +152,8 @@
     display: flex;
     gap: 2rem;
     align-items: center;
-    min-height: 2.2rem;
+    min-height: 2rem;
+    flex-wrap: wrap;
   }
 
   .status-dot {
@@ -106,82 +166,138 @@
   .status-dot.ok   { background: #4DB87A; box-shadow: 0 0 6px #4DB87A88; }
   .status-dot.err  { background: #EF4444; }
   .status-dot.spin { background: var(--accent); animation: pulse 1s infinite; }
-
   @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-  /* ── Main 3-panel grid ── */
+  /* ── Query bar ── */
+  #query-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.6rem 2rem;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .query-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent3);
+    white-space: nowrap;
+  }
+  .query-input {
+    flex: 1;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text);
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    padding: 0.45rem 0.75rem;
+    transition: border-color 0.15s;
+  }
+  .query-input:focus { outline: none; border-color: var(--accent3); }
+  .query-input::placeholder { color: var(--text-muted); }
+  .query-btn {
+    padding: 0.45rem 1.1rem;
+    background: var(--accent3);
+    border: none;
+    border-radius: 4px;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .query-btn:hover    { background: #9333ea; }
+  .query-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  /* ── Answer panel ── */
+  #answer-panel {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+    background: var(--surface2);
+    border-bottom: 1px solid var(--border);
+  }
+  #answer-panel.open { max-height: 340px; overflow-y: auto; }
+  .answer-inner { padding: 1rem 2rem; display: flex; flex-direction: column; gap: 0.75rem; }
+
+  .answer-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .answer-close {
+    margin-left: auto;
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    cursor: pointer;
+    font-size: 0.9rem;
+    line-height: 1;
+  }
+  .answer-close:hover { color: var(--text); }
+
+  .answer-text {
+    font-size: 0.78rem;
+    color: var(--text);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .answer-nodes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .answer-node-chip {
+    font-size: 0.6rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 3px;
+    background: #4DB87A22;
+    color: var(--col-func);
+    border: 1px solid #4DB87A44;
+  }
+
+  /* ── Graph panels ── */
+  #graph-view { display: flex; flex: 1; min-height: 0; }
+
   .panels {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 1px;
     background: var(--border);
-    height: calc(100vh - 5.2rem);
+    flex: 1;
+    min-height: 0;
   }
 
-  .panel {
-    background: var(--bg);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
+  .panel { background: var(--bg); display: flex; flex-direction: column; overflow: hidden; }
 
-  /* ── Panel header ── */
   .panel-header {
     padding: 1rem 1.25rem 0.75rem;
     border-bottom: 1px solid var(--border);
     background: var(--surface);
     flex-shrink: 0;
   }
-
-  .panel-title {
-    font-family: var(--font-head);
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: -0.01em;
-  }
-  .panel-subtitle {
-    font-size: 0.65rem;
-    color: var(--accent);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    margin-top: 0.15rem;
-  }
-
-  .panel-stats {
-    display: flex;
-    gap: 1rem;
-    margin-top: 0.6rem;
-    flex-wrap: wrap;
-  }
-  .stat {
-    font-size: 0.65rem;
-    color: var(--text-dim);
-  }
-  .stat strong {
-    color: var(--text);
-    font-weight: 600;
-  }
+  .panel-title { font-family: var(--font-head); font-size: 0.95rem; font-weight: 600; color: var(--text); }
+  .panel-subtitle { font-size: 0.65rem; color: var(--accent); text-transform: uppercase; letter-spacing: 0.1em; margin-top: 0.15rem; }
+  .panel-stats { display: flex; gap: 1rem; margin-top: 0.6rem; flex-wrap: wrap; }
+  .stat { font-size: 0.65rem; color: var(--text-dim); }
+  .stat strong { color: var(--text); font-weight: 600; }
   .stat.time strong { color: var(--accent); }
 
-  /* ── Graph canvas ── */
-  .graph-wrap {
-    flex: 1;
-    position: relative;
-    overflow: hidden;
-  }
-
-  svg.graph-svg {
-    width: 100%;
-    height: 100%;
-    cursor: grab;
-  }
+  .graph-wrap { flex: 1; position: relative; overflow: hidden; }
+  svg.graph-svg { width: 100%; height: 100%; cursor: grab; }
   svg.graph-svg:active { cursor: grabbing; }
 
-  .node circle {
-    stroke-width: 1.5;
-    transition: r 0.15s;
-  }
+  .node circle { stroke-width: 1.5; transition: r 0.15s; }
   .node:hover circle { r: 9; }
   .node text {
     font-family: var(--font-mono);
@@ -190,14 +306,10 @@
     pointer-events: none;
     dominant-baseline: central;
   }
+  .node.highlighted circle { stroke: #fff; stroke-width: 2.5; }
 
-  .link {
-    fill: none;
-    stroke-opacity: 0.55;
-    marker-end: url(#arrow);
-  }
+  .link { fill: none; stroke-opacity: 0.55; }
 
-  /* ── Info card (expandable) ── */
   .info-card {
     border-top: 1px solid var(--border);
     background: var(--surface);
@@ -207,95 +319,44 @@
     transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
   }
   .info-card.open { max-height: 24rem; overflow-y: auto; }
-
   .info-toggle {
-    width: 100%;
-    padding: 0.65rem 1.25rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-mono);
-    font-size: 0.65rem;
-    color: var(--text-dim);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
+    width: 100%; padding: 0.65rem 1.25rem;
+    display: flex; align-items: center; justify-content: space-between;
+    background: transparent; border: none; cursor: pointer;
+    font-family: var(--font-mono); font-size: 0.65rem;
+    color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.1em;
   }
   .info-toggle:hover { color: var(--accent); }
   .info-toggle .chevron { transition: transform 0.25s; }
   .info-card.open .chevron { transform: rotate(180deg); }
-
   .info-body { padding: 0 1.25rem 1.25rem; }
-
   .info-section { margin-top: 0.9rem; }
-  .info-label {
-    font-size: 0.6rem;
-    text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--accent);
-    margin-bottom: 0.35rem;
-  }
-  .info-text {
-    font-size: 0.7rem;
-    color: var(--text-dim);
-    line-height: 1.6;
-  }
-
+  .info-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 0.12em; color: var(--accent); margin-bottom: 0.35rem; }
+  .info-text { font-size: 0.7rem; color: var(--text-dim); line-height: 1.6; }
   .advantage-list { list-style: none; }
-  .advantage-list li {
-    font-size: 0.68rem;
-    color: var(--text-dim);
-    padding: 0.2rem 0;
-    display: flex;
-    gap: 0.5rem;
-  }
+  .advantage-list li { font-size: 0.68rem; color: var(--text-dim); padding: 0.2rem 0; display: flex; gap: 0.5rem; }
   .advantage-list li::before { content: '→'; color: var(--accent2); flex-shrink: 0; }
-
-  .complexity-grid {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    gap: 0.2rem 0.75rem;
-    font-size: 0.65rem;
-  }
+  .complexity-grid { display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 0.75rem; font-size: 0.65rem; }
   .complexity-grid dt { color: var(--text-dim); }
   .complexity-grid dd { color: var(--col-func); font-family: var(--font-mono); }
-
   .type-chips { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-top: 0.25rem; }
-  .chip {
-    padding: 0.15rem 0.55rem;
-    border-radius: 3px;
-    font-size: 0.6rem;
-    font-weight: 600;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-  }
-  .chip.file    { background: #4A9EE822; color: var(--col-file);  border: 1px solid #4A9EE844; }
-  .chip.class   { background: #F4913A22; color: var(--col-class); border: 1px solid #F4913A44; }
-  .chip.func    { background: #4DB87A22; color: var(--col-func);  border: 1px solid #4DB87A44; }
-  .chip.imports { background: #4A9EE822; color: var(--col-imp);   border: 1px solid #4A9EE844; }
-  .chip.inherits{ background: #EF444422; color: var(--col-inh);   border: 1px solid #EF444444; }
-  .chip.contains{ background: #94A3B822; color: var(--col-cont);  border: 1px solid #94A3B844; }
-  .chip.calls   { background: #A855F722; color: var(--col-call);  border: 1px solid #A855F744; }
+  .chip { padding: 0.15rem 0.55rem; border-radius: 3px; font-size: 0.6rem; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; }
+  .chip.file     { background: #4A9EE822; color: var(--col-file);  border: 1px solid #4A9EE844; }
+  .chip.class    { background: #F4913A22; color: var(--col-class); border: 1px solid #F4913A44; }
+  .chip.func     { background: #4DB87A22; color: var(--col-func);  border: 1px solid #4DB87A44; }
+  .chip.imports  { background: #4A9EE822; color: var(--col-imp);   border: 1px solid #4A9EE844; }
+  .chip.inherits { background: #EF444422; color: var(--col-inh);   border: 1px solid #EF444444; }
+  .chip.contains { background: #94A3B822; color: var(--col-cont);  border: 1px solid #94A3B844; }
+  .chip.calls    { background: #A855F722; color: var(--col-call);  border: 1px solid #A855F744; }
 
   /* ── Legend ── */
   .legend {
-    position: fixed;
-    bottom: 1rem;
-    left: 50%;
-    transform: translateX(-50%);
-    display: flex;
-    gap: 1.2rem;
-    align-items: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.5rem 1.25rem;
-    font-size: 0.62rem;
-    color: var(--text-dim);
-    z-index: 200;
-    pointer-events: none;
+    position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 1.2rem; align-items: center;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.5rem 1.25rem;
+    font-size: 0.62rem; color: var(--text-dim);
+    z-index: 200; pointer-events: none;
   }
   .legend-item { display: flex; align-items: center; gap: 0.35rem; }
   .legend-dot  { width: 8px; height: 8px; border-radius: 50%; }
@@ -303,138 +364,399 @@
 
   /* ── Tooltip ── */
   #tooltip {
-    position: fixed;
-    pointer-events: none;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.6rem 0.9rem;
-    font-size: 0.68rem;
-    color: var(--text);
-    z-index: 300;
-    opacity: 0;
-    transition: opacity 0.1s;
-    max-width: 280px;
-    line-height: 1.6;
+    position: fixed; pointer-events: none;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.6rem 0.9rem;
+    font-size: 0.68rem; color: var(--text);
+    z-index: 300; opacity: 0; transition: opacity 0.1s;
+    max-width: 280px; line-height: 1.6;
   }
   #tooltip.visible { opacity: 1; }
 
-  /* ── Loading ── */
+  /* ── Loading / Error ── */
   .loading-overlay {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--bg);
-    z-index: 10;
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--bg); z-index: 10;
   }
   .loading-ring {
     width: 32px; height: 32px;
-    border: 2px solid var(--border);
-    border-top-color: var(--accent);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
+    border: 2px solid var(--border); border-top-color: var(--accent);
+    border-radius: 50%; animation: spin 0.7s linear infinite;
   }
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* ── Error state ── */
   .error-state {
-    display: none;
-    position: absolute;
-    inset: 0;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 0.75rem;
-    font-size: 0.75rem;
-    color: #EF4444;
-    text-align: center;
-    padding: 2rem;
+    display: none; position: absolute; inset: 0;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 0.75rem;
+    font-size: 0.75rem; color: #EF4444;
+    text-align: center; padding: 2rem;
   }
   .error-state.show { display: flex; }
+
+  /* ════════════════════════
+     MEMORY VIEW
+  ════════════════════════ */
+  #memory-view {
+    flex: 1; overflow-y: auto;
+    padding: 2rem; display: none;
+    flex-direction: column; gap: 1.5rem;
+  }
+  #memory-view.active { display: flex; }
+
+  .mem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  @media (max-width: 900px) { .mem-grid { grid-template-columns: 1fr; } }
+
+  .mem-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 1.25rem;
+    display: flex; flex-direction: column; gap: 1rem;
+  }
+  .mem-card.full { grid-column: 1 / -1; }
+
+  .mem-card-title {
+    font-family: var(--font-head); font-size: 0.9rem; font-weight: 600;
+    color: var(--text); border-bottom: 1px solid var(--border);
+    padding-bottom: 0.65rem; display: flex; align-items: center; gap: 0.5rem;
+  }
+  .mem-card-title .badge {
+    font-size: 0.6rem; padding: 0.1rem 0.5rem; border-radius: 3px;
+    background: #A855F722; color: var(--accent3);
+    border: 1px solid #A855F744; text-transform: uppercase;
+    letter-spacing: 0.08em; font-family: var(--font-mono);
+  }
+
+  .embedder-status-row { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .embedder-pill {
+    display: flex; align-items: center; gap: 0.5rem;
+    padding: 0.4rem 0.9rem; border-radius: 20px;
+    border: 1px solid var(--border); font-size: 0.7rem;
+    cursor: default; background: transparent;
+    color: var(--text-dim); font-family: var(--font-mono);
+  }
+  .embedder-pill .edot { width: 7px; height: 7px; border-radius: 50%; }
+  .embedder-pill .ecount { font-size: 0.62rem; background: rgba(0,0,0,0.3); padding: 0 4px; border-radius: 3px; }
+
+  .mem-field { display: flex; flex-direction: column; gap: 0.4rem; }
+  .mem-label { font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent); }
+  .mem-input, .mem-textarea, .mem-select {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 4px; color: var(--text);
+    font-family: var(--font-mono); font-size: 0.75rem;
+    padding: 0.55rem 0.75rem; transition: border-color 0.15s; width: 100%;
+  }
+  .mem-input:focus, .mem-textarea:focus, .mem-select:focus { outline: none; border-color: var(--accent3); }
+  .mem-textarea { resize: vertical; min-height: 70px; }
+  .mem-row { display: flex; gap: 0.75rem; align-items: flex-end; }
+  .mem-row .mem-field { flex: 1; }
+
+  .mem-btn {
+    padding: 0.55rem 1.2rem; border-radius: 4px; border: none;
+    font-family: var(--font-mono); font-size: 0.75rem; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .mem-btn.primary   { background: var(--accent3); color: #fff; }
+  .mem-btn.primary:hover { background: #9333ea; }
+  .mem-btn.secondary { background: transparent; border: 1px solid var(--border); color: var(--text-dim); }
+  .mem-btn.secondary:hover { border-color: var(--accent); color: var(--accent); }
+  .mem-btn.danger    { background: transparent; border: 1px solid #EF444466; color: #EF4444; }
+  .mem-btn.danger:hover { background: #EF444422; }
+  .mem-btn:disabled  { opacity: 0.4; cursor: not-allowed; }
+
+  .mem-results { display: flex; flex-direction: column; gap: 0.5rem; min-height: 60px; }
+  .mem-result-item {
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.75rem 1rem;
+    display: flex; flex-direction: column; gap: 0.35rem;
+    transition: border-color 0.15s;
+  }
+  .mem-result-item:hover { border-color: var(--accent3); }
+  .mem-result-header { display: flex; align-items: center; gap: 0.75rem; }
+  .mem-result-rank   { font-size: 0.6rem; color: var(--text-muted); min-width: 1.5rem; }
+  .mem-result-score  { font-size: 0.7rem; color: var(--col-func); font-weight: 600; }
+  .mem-result-embedder {
+    font-size: 0.6rem; padding: 0.1rem 0.45rem; border-radius: 3px;
+    background: #A855F722; color: var(--accent3);
+    border: 1px solid #A855F744; text-transform: uppercase; margin-left: auto;
+  }
+  .mem-result-text  { font-size: 0.7rem; color: var(--text-dim); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .mem-result-meta  { font-size: 0.6rem; color: var(--text-muted); display: flex; gap: 0.75rem; flex-wrap: wrap; }
+  .mem-empty { font-size: 0.72rem; color: var(--text-muted); text-align: center; padding: 1.5rem; }
+
+  .compare-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+  @media (max-width: 1000px) { .compare-grid { grid-template-columns: 1fr; } }
+  .compare-col { background: var(--bg); border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
+  .compare-col-header {
+    padding: 0.6rem 1rem; background: var(--surface2);
+    font-size: 0.7rem; font-weight: 600; color: var(--accent3);
+    text-transform: uppercase; letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .compare-col-body { padding: 0.5rem; display: flex; flex-direction: column; gap: 0.4rem; }
+
+  .sync-row { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+  .sync-info { font-size: 0.68rem; color: var(--text-dim); flex: 1; }
+
+  .mem-toast {
+    position: fixed; bottom: 5rem; left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 0.6rem 1.25rem;
+    font-size: 0.72rem; color: var(--text);
+    z-index: 400; opacity: 0; transition: all 0.25s; pointer-events: none;
+  }
+  .mem-toast.show    { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .mem-toast.success { border-color: #4DB87A66; color: #4DB87A; }
+  .mem-toast.error   { border-color: #EF444466; color: #EF4444; }
 </style>
 </head>
 <body>
 
+<!-- ══ HEADER ══ -->
 <header>
-  <div class="logo">DevGraph<span>-RL</span> · Graph Visualiser</div>
-  <div class="lang-selector">
-    <button class="lang-btn active" data-lang="python">Python</button>
-    <button class="lang-btn" data-lang="javascript">JavaScript</button>
-    <button class="lang-btn" data-lang="java">Java</button>
-    <button class="lang-btn" data-lang="cpp">C++</button>
+  <div class="logo">DevGraph<span>-RL</span></div>
+
+  <div class="repo-bar">
+    <input class="repo-input" id="repo-url-input"
+           type="text"
+           placeholder="https://github.com/user/repo"
+           value=""/>
+    <button class="repo-load-btn" id="repo-load-btn" onclick="loadRepo()">Load</button>
+  </div>
+
+  <div class="header-right">
+    <div class="lang-selector" id="lang-selector">
+      <button class="lang-btn active" data-lang="python">Python</button>
+      <button class="lang-btn" data-lang="javascript">JavaScript</button>
+      <button class="lang-btn" data-lang="java">Java</button>
+      <button class="lang-btn" data-lang="cpp">C++</button>
+    </div>
+    <div class="view-tabs">
+      <button class="view-tab active" data-view="graphs">Graphs</button>
+      <button class="view-tab" data-view="memory">Memory</button>
+    </div>
   </div>
 </header>
 
+<!-- ══ STATUS BAR ══ -->
 <div id="status-bar">
-  <span><span class="status-dot spin" id="status-dot"></span><span id="status-text">Loading graphs…</span></span>
+  <span>
+    <span class="status-dot spin" id="status-dot"></span>
+    <span id="status-text">Loading sample graphs…</span>
+  </span>
+  <span id="repo-badge" style="color:var(--accent);display:none"></span>
 </div>
 
-<div class="panels">
-  <!-- AST -->
-  <div class="panel" id="panel-ast">
-    <div class="panel-header">
-      <div class="panel-title">AST Graph</div>
-      <div class="panel-subtitle" id="subtitle-ast">Structural Anatomy</div>
-      <div class="panel-stats" id="stats-ast"></div>
+<!-- ══ QUERY BAR ══ -->
+<div id="query-bar">
+  <span class="query-label">Ask</span>
+  <input class="query-input" id="query-input"
+         type="text"
+         placeholder="Load a repo first, then ask anything — e.g. which files handle kafka connections?"
+         disabled/>
+  <button class="query-btn" id="query-btn" onclick="askQuery()" disabled>Ask</button>
+</div>
+
+<!-- ══ ANSWER PANEL ══ -->
+<div id="answer-panel">
+  <div class="answer-inner">
+    <div class="answer-header">
+      <span style="color:var(--accent3)">▸</span>
+      <span id="answer-query-label"></span>
+      <button class="answer-close" onclick="closeAnswer()">✕</button>
     </div>
-    <div class="graph-wrap">
-      <div class="loading-overlay" id="load-ast"><div class="loading-ring"></div></div>
-      <div class="error-state" id="err-ast"></div>
-      <svg class="graph-svg" id="svg-ast"></svg>
+    <div class="answer-text" id="answer-text"></div>
+    <div id="answer-nodes-row" style="display:none">
+      <div class="info-label" style="margin-bottom:0.35rem">Relevant nodes</div>
+      <div class="answer-nodes" id="answer-nodes"></div>
     </div>
-    <div class="info-card" id="card-ast">
-      <button class="info-toggle" onclick="toggleCard('ast')">
-        Architecture &amp; How It Works <span class="chevron">▾</span>
-      </button>
-      <div class="info-body" id="body-ast"></div>
+  </div>
+</div>
+
+<!-- ══ GRAPH VIEW ══ -->
+<div id="graph-view">
+  <div class="panels">
+    <!-- AST -->
+    <div class="panel" id="panel-ast">
+      <div class="panel-header">
+        <div class="panel-title">AST Graph</div>
+        <div class="panel-subtitle" id="subtitle-ast">Structural Anatomy</div>
+        <div class="panel-stats" id="stats-ast"></div>
+      </div>
+      <div class="graph-wrap">
+        <div class="loading-overlay" id="load-ast"><div class="loading-ring"></div></div>
+        <div class="error-state" id="err-ast"></div>
+        <svg class="graph-svg" id="svg-ast"></svg>
+      </div>
+      <div class="info-card" id="card-ast">
+        <button class="info-toggle" onclick="toggleCard('ast')">Architecture &amp; How It Works <span class="chevron">▾</span></button>
+        <div class="info-body" id="body-ast"></div>
+      </div>
+    </div>
+
+    <!-- Dependency -->
+    <div class="panel" id="panel-dep">
+      <div class="panel-header">
+        <div class="panel-title">Dependency Graph</div>
+        <div class="panel-subtitle" id="subtitle-dep">Module Coupling</div>
+        <div class="panel-stats" id="stats-dep"></div>
+      </div>
+      <div class="graph-wrap">
+        <div class="loading-overlay" id="load-dep"><div class="loading-ring"></div></div>
+        <div class="error-state" id="err-dep"></div>
+        <svg class="graph-svg" id="svg-dep"></svg>
+      </div>
+      <div class="info-card" id="card-dep">
+        <button class="info-toggle" onclick="toggleCard('dep')">Architecture &amp; How It Works <span class="chevron">▾</span></button>
+        <div class="info-body" id="body-dep"></div>
+      </div>
+    </div>
+
+    <!-- Call -->
+    <div class="panel" id="panel-call">
+      <div class="panel-header">
+        <div class="panel-title">Call Graph</div>
+        <div class="panel-subtitle" id="subtitle-call">Execution Flow</div>
+        <div class="panel-stats" id="stats-call"></div>
+      </div>
+      <div class="graph-wrap">
+        <div class="loading-overlay" id="load-call"><div class="loading-ring"></div></div>
+        <div class="error-state" id="err-call"></div>
+        <svg class="graph-svg" id="svg-call"></svg>
+      </div>
+      <div class="info-card" id="card-call">
+        <button class="info-toggle" onclick="toggleCard('call')">Architecture &amp; How It Works <span class="chevron">▾</span></button>
+        <div class="info-body" id="body-call"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MEMORY VIEW ══ -->
+<div id="memory-view">
+  <div class="mem-card">
+    <div class="mem-card-title">Embedder Status <span class="badge">Phase 5</span></div>
+    <div class="embedder-status-row" id="embedder-status-row">
+      <div class="mem-empty">Loading…</div>
     </div>
   </div>
 
-  <!-- Dependency -->
-  <div class="panel" id="panel-dep">
-    <div class="panel-header">
-      <div class="panel-title">Dependency Graph</div>
-      <div class="panel-subtitle" id="subtitle-dep">Module Coupling</div>
-      <div class="panel-stats" id="stats-dep"></div>
+  <div class="mem-grid">
+    <div class="mem-card">
+      <div class="mem-card-title">Store Memory</div>
+      <div class="mem-field">
+        <div class="mem-label">Text / Task</div>
+        <textarea class="mem-textarea" id="store-text" placeholder="e.g. add error handling to payment module"></textarea>
+      </div>
+      <div class="mem-row">
+        <div class="mem-field">
+          <div class="mem-label">Embedder</div>
+          <select class="mem-select" id="store-embedder">
+            <option value="minilm">MiniLM (local)</option>
+            <option value="gemini">Gemini</option>
+            <option value="cohere">Cohere</option>
+          </select>
+        </div>
+        <div class="mem-field">
+          <div class="mem-label">Agent Type</div>
+          <select class="mem-select" id="store-agent-type">
+            <option value="manual">manual</option>
+            <option value="planner">planner</option>
+            <option value="coding">coding</option>
+            <option value="reviewer">reviewer</option>
+          </select>
+        </div>
+      </div>
+      <div class="mem-field">
+        <div class="mem-label">Repo Path (optional)</div>
+        <input class="mem-input" id="store-repo" type="text" placeholder="/tmp/devgraph" value="/tmp/devgraph"/>
+      </div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+        <button class="mem-btn primary" onclick="storeMemory()">Store Memory</button>
+        <button class="mem-btn secondary" onclick="storeToAll()">Store to All Embedders</button>
+      </div>
     </div>
-    <div class="graph-wrap">
-      <div class="loading-overlay" id="load-dep"><div class="loading-ring"></div></div>
-      <div class="error-state" id="err-dep"></div>
-      <svg class="graph-svg" id="svg-dep"></svg>
-    </div>
-    <div class="info-card" id="card-dep">
-      <button class="info-toggle" onclick="toggleCard('dep')">
-        Architecture &amp; How It Works <span class="chevron">▾</span>
-      </button>
-      <div class="info-body" id="body-dep"></div>
+
+    <div class="mem-card">
+      <div class="mem-card-title">Semantic Search</div>
+      <div class="mem-field">
+        <div class="mem-label">Query</div>
+        <input class="mem-input" id="search-query" type="text" placeholder="e.g. handle exceptions in checkout"/>
+      </div>
+      <div class="mem-row">
+        <div class="mem-field">
+          <div class="mem-label">Embedder</div>
+          <select class="mem-select" id="search-embedder">
+            <option value="minilm">MiniLM (local)</option>
+            <option value="gemini">Gemini</option>
+            <option value="cohere">Cohere</option>
+          </select>
+        </div>
+        <div class="mem-field">
+          <div class="mem-label">Top-K</div>
+          <input class="mem-input" id="search-topk" type="number" value="5" min="1" max="20"/>
+        </div>
+      </div>
+      <div style="display:flex;gap:0.75rem;flex-wrap:wrap">
+        <button class="mem-btn primary" onclick="searchMemory()">Search</button>
+        <button class="mem-btn danger" onclick="clearIndex()">Clear Index</button>
+      </div>
+      <div class="mem-results" id="search-results">
+        <div class="mem-empty">Run a search to see results</div>
+      </div>
     </div>
   </div>
 
-  <!-- Call -->
-  <div class="panel" id="panel-call">
-    <div class="panel-header">
-      <div class="panel-title">Call Graph</div>
-      <div class="panel-subtitle" id="subtitle-call">Execution Flow</div>
-      <div class="panel-stats" id="stats-call"></div>
+  <div class="mem-card full">
+    <div class="mem-card-title">Compare Embedders <span class="badge">Side by Side</span></div>
+    <div class="mem-row">
+      <div class="mem-field">
+        <div class="mem-label">Query</div>
+        <input class="mem-input" id="compare-query" type="text" placeholder="e.g. refactor payment service"/>
+      </div>
+      <div class="mem-field" style="max-width:100px">
+        <div class="mem-label">Top-K</div>
+        <input class="mem-input" id="compare-topk" type="number" value="3" min="1" max="10"/>
+      </div>
+      <button class="mem-btn primary" onclick="compareSearch()">Compare</button>
     </div>
-    <div class="graph-wrap">
-      <div class="loading-overlay" id="load-call"><div class="loading-ring"></div></div>
-      <div class="error-state" id="err-call"></div>
-      <svg class="graph-svg" id="svg-call"></svg>
+    <div class="compare-grid" id="compare-grid">
+      <div class="compare-col">
+        <div class="compare-col-header">MiniLM <span style="color:var(--text-muted);font-size:0.6rem">384-dim · local</span></div>
+        <div class="compare-col-body" id="compare-minilm"><div class="mem-empty">—</div></div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-header">Gemini <span style="color:var(--text-muted);font-size:0.6rem">768-dim · API</span></div>
+        <div class="compare-col-body" id="compare-gemini"><div class="mem-empty">—</div></div>
+      </div>
+      <div class="compare-col">
+        <div class="compare-col-header">Cohere <span style="color:var(--text-muted);font-size:0.6rem">384-dim · API</span></div>
+        <div class="compare-col-body" id="compare-cohere"><div class="mem-empty">—</div></div>
+      </div>
     </div>
-    <div class="info-card" id="card-call">
-      <button class="info-toggle" onclick="toggleCard('call')">
-        Architecture &amp; How It Works <span class="chevron">▾</span>
-      </button>
-      <div class="info-body" id="body-call"></div>
+  </div>
+
+  <div class="mem-card full">
+    <div class="mem-card-title">Sync Indexes</div>
+    <div class="sync-row">
+      <div class="mem-field" style="max-width:200px">
+        <div class="mem-label">Source Embedder</div>
+        <select class="mem-select" id="sync-source">
+          <option value="minilm">MiniLM</option>
+          <option value="gemini">Gemini</option>
+          <option value="cohere">Cohere</option>
+        </select>
+      </div>
+      <div class="sync-info">Re-encodes all memories from source into the other two indexes.</div>
+      <button class="mem-btn secondary" onclick="syncMemories()">Sync to All Embedders</button>
     </div>
   </div>
 </div>
 
 <!-- Legend -->
-<div class="legend">
+<div class="legend" id="legend">
   <div class="legend-item"><div class="legend-dot" style="background:var(--col-file)"></div>File</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--col-class)"></div>Class</div>
   <div class="legend-item"><div class="legend-dot" style="background:var(--col-func)"></div>Function</div>
@@ -445,82 +767,219 @@
   <div class="legend-item"><div class="legend-line" style="background:var(--col-call)"></div>Calls</div>
 </div>
 
-<!-- Tooltip -->
 <div id="tooltip"></div>
+<div class="mem-toast" id="mem-toast"></div>
 
 <script>
-// ── State ──────────────────────────────────────────────────────────────────
-let currentLang = 'python';
-const PANEL_KEYS = ['ast', 'dep', 'call'];
-const API_KEYS   = { ast: 'ast', dep: 'dependency', call: 'call' };
-const simulations = {};
+// ════════════════════════════════════════
+// STATE
+// ════════════════════════════════════════
+let currentLang    = 'python';
+let currentRepo    = null;   // { name, url, language, local_path }
+let graphData      = {};     // last loaded graph data
+const PANEL_KEYS   = ['ast', 'dep', 'call'];
+const API_KEYS     = { ast: 'ast', dep: 'dependency', call: 'call' };
+const simulations  = {};
 
-// ── Fetch & render ─────────────────────────────────────────────────────────
-async function loadGraphs(lang) {
-  setStatus('spin', `Loading ${lang} graphs…`);
-  PANEL_KEYS.forEach(k => {
-    showLoading(k, true);
-    hideError(k);
-  });
+// ════════════════════════════════════════
+// REPO LOADING
+// ════════════════════════════════════════
+
+async function loadRepo() {
+  const url = document.getElementById('repo-url-input').value.trim();
+  if (!url) { showToast('Please enter a GitHub URL', 'error'); return; }
+
+  const btn = document.getElementById('repo-load-btn');
+  btn.disabled = true;
+  btn.textContent = 'Cloning…';
+
+  setStatus('spin', `Cloning ${url.split('/').pop()}…`);
+  PANEL_KEYS.forEach(k => { showLoading(k, true); hideError(k); });
 
   try {
-    const res = await fetch(`/api/graphs?language=${lang}`);
+    const res = await fetch('/api/repo/load', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+    });
+
     if (!res.ok) {
       const err = await res.json();
       throw new Error(err.detail || res.statusText);
     }
-    const data = await res.json();
 
-    PANEL_KEYS.forEach(k => {
-      const apiKey = API_KEYS[k];
-      const gdata  = data[apiKey];
-      showLoading(k, false);
-      renderStats(k, gdata.stats);
-      renderInfoCard(k, gdata);
-      if (gdata.note) {
-        showNote(k, gdata.note);
-      } else {
-        renderGraph(k, gdata.graph);
-      }
+    const data = await res.json();
+    currentRepo = { name: data.name, url: data.url, language: data.language };
+    currentLang = data.language;
+
+    // update language button
+    document.querySelectorAll('.lang-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.lang === currentLang);
     });
 
-    const total = PANEL_KEYS.reduce((s, k) => s + data[API_KEYS[k]].stats.nodes, 0);
-    setStatus('ok', `${lang} · ${total} total nodes across 3 graphs`);
+    // show repo badge
+    const badge = document.getElementById('repo-badge');
+    badge.textContent = `▸ ${data.name} · ${data.language} · ${data.load_time_ms}ms`;
+    badge.style.display = 'inline';
+
+    // enable query bar
+    document.getElementById('query-input').disabled = false;
+    document.getElementById('query-btn').disabled = false;
+    document.getElementById('query-input').placeholder =
+      `Ask anything about ${data.name} — e.g. which files handle kafka connections?`;
+
+    // render graphs
+    renderAllPanels(data.graphs);
+
+    const totalNodes = PANEL_KEYS.reduce((s, k) => s + (data.graphs[API_KEYS[k]]?.stats?.nodes || 0), 0);
+    setStatus('ok', `${data.name} · ${data.language} · ${totalNodes} nodes`);
+    showToast(`${data.name} loaded in ${data.load_time_ms}ms`, 'success');
 
   } catch(e) {
     setStatus('err', `Error: ${e.message}`);
-    PANEL_KEYS.forEach(k => {
-      showLoading(k, false);
-      showError(k, e.message);
-    });
+    PANEL_KEYS.forEach(k => { showLoading(k, false); showError(k, e.message); });
+    showToast(`Failed: ${e.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Load';
   }
 }
 
-// ── Status helpers ─────────────────────────────────────────────────────────
+// also trigger on Enter key in repo input
+document.getElementById('repo-url-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') loadRepo();
+});
+
+// ════════════════════════════════════════
+// NATURAL LANGUAGE QUERY
+// ════════════════════════════════════════
+
+async function askQuery() {
+  const query = document.getElementById('query-input').value.trim();
+  if (!query) return;
+  if (!currentRepo) { showToast('Load a repo first', 'error'); return; }
+
+  const btn = document.getElementById('query-btn');
+  btn.disabled = true;
+  btn.textContent = 'Thinking…';
+
+  try {
+    const res = await fetch('/api/repo/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query }),
+    });
+
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || res.statusText);
+    }
+
+    const data = await res.json();
+    showAnswer(data);
+
+    // highlight relevant nodes in graphs
+    if (data.relevant_nodes && data.relevant_nodes.length > 0) {
+      highlightNodes(data.relevant_nodes);
+    }
+
+  } catch(e) {
+    showToast(`Query failed: ${e.message}`, 'error');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Ask';
+  }
+}
+
+document.getElementById('query-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') askQuery();
+});
+
+function showAnswer(data) {
+  document.getElementById('answer-query-label').textContent = data.query;
+  document.getElementById('answer-text').textContent = data.answer;
+
+  const nodesRow = document.getElementById('answer-nodes-row');
+  const nodesEl  = document.getElementById('answer-nodes');
+
+  if (data.relevant_nodes && data.relevant_nodes.length > 0) {
+    nodesEl.innerHTML = data.relevant_nodes.slice(0, 15).map(n =>
+      `<span class="answer-node-chip">${escHtml(n.split('/').pop() || n)}</span>`
+    ).join('');
+    nodesRow.style.display = 'block';
+  } else {
+    nodesRow.style.display = 'none';
+  }
+
+  document.getElementById('answer-panel').classList.add('open');
+}
+
+function closeAnswer() {
+  document.getElementById('answer-panel').classList.remove('open');
+}
+
+function highlightNodes(nodeIds) {
+  const idSet = new Set(nodeIds);
+  PANEL_KEYS.forEach(key => {
+    d3.select(`#svg-${key}`).selectAll('.node')
+      .classed('highlighted', d => idSet.has(d.id));
+  });
+}
+
+// ════════════════════════════════════════
+// GRAPH RENDERING
+// ════════════════════════════════════════
+
+function renderAllPanels(graphs) {
+  graphData = graphs;
+  PANEL_KEYS.forEach(k => {
+    const apiKey = API_KEYS[k];
+    const gdata  = graphs[apiKey];
+    if (!gdata) return;
+    showLoading(k, false);
+    renderStats(k, gdata.stats);
+    renderInfoCard(k, gdata);
+    if (gdata.note) showNote(k, gdata.note);
+    else renderGraph(k, gdata.graph);
+  });
+}
+
+async function loadSampleGraphs(lang) {
+  setStatus('spin', `Loading ${lang} graphs…`);
+  PANEL_KEYS.forEach(k => { showLoading(k, true); hideError(k); });
+
+  try {
+    const res = await fetch(`/api/graphs?language=${lang}`);
+    if (!res.ok) { const err = await res.json(); throw new Error(err.detail || res.statusText); }
+    const data = await res.json();
+    renderAllPanels(data);
+    const total = PANEL_KEYS.reduce((s, k) => s + data[API_KEYS[k]].stats.nodes, 0);
+    setStatus('ok', `${lang} sample · ${total} nodes`);
+  } catch(e) {
+    setStatus('err', `Error: ${e.message}`);
+    PANEL_KEYS.forEach(k => { showLoading(k, false); showError(k, e.message); });
+  }
+}
+
 function setStatus(type, msg) {
-  const dot  = document.getElementById('status-dot');
-  const text = document.getElementById('status-text');
-  dot.className = `status-dot ${type}`;
-  text.textContent = msg;
+  document.getElementById('status-dot').className = `status-dot ${type}`;
+  document.getElementById('status-text').textContent = msg;
 }
 function showLoading(key, show) {
   document.getElementById(`load-${key}`).style.display = show ? 'flex' : 'none';
 }
 function showError(key, msg) {
   const el = document.getElementById(`err-${key}`);
-  el.innerHTML = `<div>⚠ Parse or build failed</div><div style="color:var(--text-dim);font-size:0.65rem">${msg}</div>`;
+  el.innerHTML = `<div>⚠ Build failed</div><div style="color:var(--text-dim);font-size:0.65rem">${msg}</div>`;
   el.classList.add('show');
 }
-function hideError(key) {
-  document.getElementById(`err-${key}`).classList.remove('show');
-}
+function hideError(key) { document.getElementById(`err-${key}`).classList.remove('show'); }
 function showNote(key, msg) {
   const el = document.getElementById(`err-${key}`);
-  el.innerHTML = `<div style="color:var(--accent);font-size:0.75rem;margin-bottom:0.4rem">ℹ AST Graph</div><div style="color:var(--text-dim);font-size:0.65rem;line-height:1.6;max-width:280px;text-align:center">${msg}</div>`;
+  el.innerHTML = `<div style="color:var(--accent);font-size:0.75rem;margin-bottom:0.4rem">ℹ</div><div style="color:var(--text-dim);font-size:0.65rem;line-height:1.6;max-width:280px;text-align:center">${msg}</div>`;
   el.classList.add('show');
 }
 
-// ── Stats bar ─────────────────────────────────────────────────────────────
 function renderStats(key, stats) {
   document.getElementById(`stats-${key}`).innerHTML = `
     <span class="stat"><strong>${stats.nodes}</strong> nodes</span>
@@ -529,44 +988,20 @@ function renderStats(key, stats) {
   `;
 }
 
-// ── Info card ─────────────────────────────────────────────────────────────
 function renderInfoCard(key, gdata) {
-  const nodeChips = (gdata.node_types || []).map(t =>
-    `<span class="chip ${t.split(' ')[0]}">${t}</span>`).join('');
-  const edgeChips = (gdata.edge_types || []).map(t =>
-    `<span class="chip ${t.split(' ')[0]}">${t}</span>`).join('');
-  const advItems  = (gdata.advantages || []).map(a =>
-    `<li>${a}</li>`).join('');
+  const nodeChips = (gdata.node_types || []).map(t => `<span class="chip ${t.split(' ')[0]}">${t}</span>`).join('');
+  const edgeChips = (gdata.edge_types || []).map(t => `<span class="chip ${t.split(' ')[0]}">${t}</span>`).join('');
+  const advItems  = (gdata.advantages || []).map(a => `<li>${a}</li>`).join('');
   const cx = gdata.complexity || {};
-
   document.getElementById(`body-${key}`).innerHTML = `
-    <div class="info-section">
-      <div class="info-label">What it is</div>
-      <div class="info-text">${gdata.description || ''}</div>
+    <div class="info-section"><div class="info-label">What it is</div><div class="info-text">${gdata.description||''}</div></div>
+    <div class="info-section"><div class="info-label">How it works</div><div class="info-text">${gdata.how_it_works||''}</div></div>
+    <div class="info-section"><div class="info-label">Advantages</div><ul class="advantage-list">${advItems}</ul></div>
+    <div class="info-section"><div class="info-label">Complexity</div>
+      <dl class="complexity-grid"><dt>Build</dt><dd>${cx.build||'—'}</dd><dt>Traversal</dt><dd>${cx.traversal||'—'}</dd></dl>
     </div>
-    <div class="info-section">
-      <div class="info-label">How it works</div>
-      <div class="info-text">${gdata.how_it_works || ''}</div>
-    </div>
-    <div class="info-section">
-      <div class="info-label">Advantages</div>
-      <ul class="advantage-list">${advItems}</ul>
-    </div>
-    <div class="info-section">
-      <div class="info-label">Complexity</div>
-      <dl class="complexity-grid">
-        <dt>Build</dt><dd>${cx.build || '—'}</dd>
-        <dt>Traversal</dt><dd>${cx.traversal || '—'}</dd>
-      </dl>
-    </div>
-    <div class="info-section">
-      <div class="info-label">Node types</div>
-      <div class="type-chips">${nodeChips}</div>
-    </div>
-    <div class="info-section">
-      <div class="info-label">Edge types</div>
-      <div class="type-chips">${edgeChips}</div>
-    </div>
+    <div class="info-section"><div class="info-label">Node types</div><div class="type-chips">${nodeChips}</div></div>
+    <div class="info-section"><div class="info-label">Edge types</div><div class="type-chips">${edgeChips}</div></div>
   `;
 }
 
@@ -574,55 +1009,36 @@ function toggleCard(key) {
   document.getElementById(`card-${key}`).classList.toggle('open');
 }
 
-// ── D3 force graph ─────────────────────────────────────────────────────────
 function renderGraph(key, graphData) {
   const svgEl = document.getElementById(`svg-${key}`);
-  const wrap   = svgEl.parentElement;
-  const W      = wrap.clientWidth  || 500;
-  const H      = wrap.clientHeight || 400;
+  const wrap  = svgEl.parentElement;
+  const W = wrap.clientWidth || 500;
+  const H = wrap.clientHeight || 400;
 
-  // Clear previous
-  if (simulations[key]) { simulations[key].stop(); }
+  if (simulations[key]) simulations[key].stop();
   d3.select(svgEl).selectAll('*').remove();
 
   const svg = d3.select(svgEl);
-
-  // Arrow marker
   svg.append('defs').append('marker')
     .attr('id', `arrow-${key}`)
-    .attr('viewBox', '0 -4 8 8')
-    .attr('refX', 18).attr('refY', 0)
-    .attr('markerWidth', 6).attr('markerHeight', 6)
-    .attr('orient', 'auto')
-    .append('path')
-    .attr('d', 'M0,-4L8,0L0,4')
-    .attr('fill', '#64748B');
+    .attr('viewBox', '0 -4 8 8').attr('refX', 18).attr('refY', 0)
+    .attr('markerWidth', 6).attr('markerHeight', 6).attr('orient', 'auto')
+    .append('path').attr('d', 'M0,-4L8,0L0,4').attr('fill', '#64748B');
 
   const g = svg.append('g');
-
-  // Zoom
-  svg.call(d3.zoom()
-    .scaleExtent([0.2, 4])
-    .on('zoom', e => g.attr('transform', e.transform))
-  );
+  svg.call(d3.zoom().scaleExtent([0.2, 4]).on('zoom', e => g.attr('transform', e.transform)));
 
   const nodes = graphData.nodes.map(n => ({...n}));
   const links = graphData.edges.map(e => ({...e}));
-
-  // Node radius by kind
   const nodeR = { file: 9, class: 7, func: 5 };
 
-  // Links
-  const link = g.append('g').selectAll('line')
-    .data(links).join('line')
+  const link = g.append('g').selectAll('line').data(links).join('line')
     .attr('class', 'link')
     .attr('stroke', d => d.color || '#64748B')
     .attr('stroke-width', d => Math.min(1 + (d.weight || 1) * 0.4, 3))
     .attr('marker-end', `url(#arrow-${key})`);
 
-  // Nodes
-  const node = g.append('g').selectAll('g')
-    .data(nodes).join('g')
+  const node = g.append('g').selectAll('g').data(nodes).join('g')
     .attr('class', 'node')
     .call(d3.drag()
       .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.3).restart(); d.fx=d.x; d.fy=d.y; })
@@ -637,16 +1053,9 @@ function renderGraph(key, graphData) {
     .attr('fill-opacity', 0.25);
 
   node.append('text')
-    .attr('x', d => (nodeR[d.kind] || 6) + 3)
-    .attr('y', 0)
-    .text(d => {
-      const lbl = d.label || d.id;
-      // Show last 2 path components max
-      const parts = lbl.split(/[:/]/);
-      return parts.slice(-2).join('.');
-    });
+    .attr('x', d => (nodeR[d.kind] || 6) + 3).attr('y', 0)
+    .text(d => { const parts = (d.label || d.id).split(/[:/]/); return parts.slice(-2).join('.'); });
 
-  // Tooltip
   const tooltip = document.getElementById('tooltip');
   node.on('mousemove', (e, d) => {
     tooltip.classList.add('visible');
@@ -659,34 +1068,258 @@ function renderGraph(key, graphData) {
     `;
   }).on('mouseleave', () => tooltip.classList.remove('visible'));
 
-  // Simulation
   const sim = d3.forceSimulation(nodes)
     .force('link', d3.forceLink(links).id(d => d.id).distance(60).strength(0.7))
     .force('charge', d3.forceManyBody().strength(-120))
     .force('center', d3.forceCenter(W / 2, H / 2))
     .force('collision', d3.forceCollide().radius(14))
     .on('tick', () => {
-      link
-        .attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-        .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+      link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+          .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
       node.attr('transform', d => `translate(${d.x},${d.y})`);
     });
 
   simulations[key] = sim;
 }
 
-// ── Language switcher ───────────────────────────────────────────────────────
+// ════════════════════════════════════════
+// VIEW SWITCHER
+// ════════════════════════════════════════
+
+document.querySelectorAll('.view-tab').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.view-tab').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const view = btn.dataset.view;
+    const graphView = document.getElementById('graph-view');
+    const memView   = document.getElementById('memory-view');
+    const legend    = document.getElementById('legend');
+
+    if (view === 'graphs') {
+      graphView.style.display = 'flex';
+      memView.classList.remove('active');
+      legend.style.display = 'flex';
+    } else {
+      graphView.style.display = 'none';
+      memView.classList.add('active');
+      legend.style.display = 'none';
+      loadMemoryStatus();
+    }
+  });
+});
+
+// ════════════════════════════════════════
+// LANGUAGE SWITCHER (sample graphs only)
+// ════════════════════════════════════════
+
 document.querySelectorAll('.lang-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
     currentLang = btn.dataset.lang;
-    loadGraphs(currentLang);
+    if (currentRepo) {
+      // reload current repo with different language override
+      loadRepoWithLanguage(currentLang);
+    } else {
+      loadSampleGraphs(currentLang);
+    }
   });
 });
 
-// ── Init ───────────────────────────────────────────────────────────────────
-loadGraphs(currentLang);
+async function loadRepoWithLanguage(lang) {
+  if (!currentRepo) return;
+  setStatus('spin', `Building ${lang} graphs for ${currentRepo.name}…`);
+  PANEL_KEYS.forEach(k => { showLoading(k, true); hideError(k); });
+  try {
+    const res = await fetch('/api/repo/query', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query: '__reload__', language: lang }),
+    });
+    // just reload via load endpoint with language override
+    const res2 = await fetch('/api/repo/load', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: currentRepo.url, language: lang }),
+    });
+    const data = await res2.json();
+    renderAllPanels(data.graphs);
+    setStatus('ok', `${currentRepo.name} · ${lang}`);
+  } catch(e) {
+    setStatus('err', e.message);
+  }
+}
+
+// ════════════════════════════════════════
+// MEMORY LOGIC
+// ════════════════════════════════════════
+
+const DIM_LABELS = { minilm: '384-dim · local', gemini: '768-dim · API', cohere: '384-dim · API' };
+
+async function loadMemoryStatus() {
+  try {
+    const res  = await fetch('/api/memory/status');
+    const data = await res.json();
+    const row  = document.getElementById('embedder-status-row');
+    row.innerHTML = Object.entries(data).map(([name, info]) => `
+      <div class="embedder-pill" title="${DIM_LABELS[name]||''}">
+        <div class="edot" style="background:${info.available ? '#4DB87A' : '#EF4444'}"></div>
+        <span style="text-transform:uppercase">${name}</span>
+        <span class="ecount">${info.size} vectors</span>
+        <span style="font-size:0.6rem;color:rgba(255,255,255,0.4)">${info.dim}d</span>
+      </div>
+    `).join('');
+  } catch(e) {
+    document.getElementById('embedder-status-row').innerHTML =
+      `<div class="mem-empty">Failed: ${e.message}</div>`;
+  }
+}
+
+async function storeMemory() {
+  const text      = document.getElementById('store-text').value.trim();
+  const embedder  = document.getElementById('store-embedder').value;
+  const agentType = document.getElementById('store-agent-type').value;
+  const repo      = document.getElementById('store-repo').value.trim();
+  if (!text) { showToast('Please enter text', 'error'); return; }
+  try {
+    const res  = await fetch('/api/memory/store', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text, embedder, agent_type: agentType, repo_path: repo }),
+    });
+    const data = await res.json();
+    showToast(`Stored in ${embedder} (${data.size} total)`, 'success');
+    loadMemoryStatus();
+  } catch(e) { showToast(`Error: ${e.message}`, 'error'); }
+}
+
+async function storeToAll() {
+  const text      = document.getElementById('store-text').value.trim();
+  const agentType = document.getElementById('store-agent-type').value;
+  const repo      = document.getElementById('store-repo').value.trim();
+  if (!text) { showToast('Please enter text', 'error'); return; }
+  try {
+    for (const embedder of ['minilm', 'gemini', 'cohere']) {
+      await fetch('/api/memory/store', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text, embedder, agent_type: agentType, repo_path: repo }),
+      });
+    }
+    showToast('Stored in all 3 embedder indexes', 'success');
+    loadMemoryStatus();
+  } catch(e) { showToast(`Error: ${e.message}`, 'error'); }
+}
+
+async function searchMemory() {
+  const query    = document.getElementById('search-query').value.trim();
+  const embedder = document.getElementById('search-embedder').value;
+  const topK     = parseInt(document.getElementById('search-topk').value) || 5;
+  if (!query) { showToast('Please enter a query', 'error'); return; }
+  const container = document.getElementById('search-results');
+  container.innerHTML = '<div class="mem-empty">Searching…</div>';
+  try {
+    const res     = await fetch('/api/memory/search', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, embedder, top_k: topK }),
+    });
+    const results = await res.json();
+    renderSearchResults(container, results);
+  } catch(e) {
+    container.innerHTML = `<div class="mem-empty" style="color:#EF4444">Error: ${e.message}</div>`;
+  }
+}
+
+async function compareSearch() {
+  const query = document.getElementById('compare-query').value.trim();
+  const topK  = parseInt(document.getElementById('compare-topk').value) || 3;
+  if (!query) { showToast('Please enter a query', 'error'); return; }
+  ['minilm','gemini','cohere'].forEach(e => {
+    document.getElementById(`compare-${e}`).innerHTML = '<div class="mem-empty">Searching…</div>';
+  });
+  try {
+    const res  = await fetch('/api/memory/search/compare', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ query, top_k: topK }),
+    });
+    const data = await res.json();
+    ['minilm','gemini','cohere'].forEach(embedder => {
+      renderSearchResults(
+        document.getElementById(`compare-${embedder}`),
+        data.results[embedder] || []
+      );
+    });
+  } catch(e) {
+    ['minilm','gemini','cohere'].forEach(e => {
+      document.getElementById(`compare-${e}`).innerHTML =
+        `<div class="mem-empty" style="color:#EF4444">Error: ${e.message}</div>`;
+    });
+  }
+}
+
+async function clearIndex() {
+  const embedder = document.getElementById('search-embedder').value;
+  if (!confirm(`Clear all memories from the ${embedder} index?`)) return;
+  try {
+    await fetch('/api/memory/clear', {
+      method: 'DELETE', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ embedder }),
+    });
+    showToast(`${embedder} index cleared`, 'success');
+    document.getElementById('search-results').innerHTML = '<div class="mem-empty">Index cleared</div>';
+    loadMemoryStatus();
+  } catch(e) { showToast(`Error: ${e.message}`, 'error'); }
+}
+
+async function syncMemories() {
+  const source = document.getElementById('sync-source').value;
+  try {
+    const res  = await fetch('/api/memory/sync', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ source_embedder: source }),
+    });
+    const data = await res.json();
+    const counts = Object.entries(data.counts||{}).map(([k,v]) => `${k}:${v}`).join(' ');
+    showToast(`Synced from ${source} → ${counts || 'nothing to sync'}`, 'success');
+    loadMemoryStatus();
+  } catch(e) { showToast(`Error: ${e.message}`, 'error'); }
+}
+
+function renderSearchResults(container, results) {
+  if (!results || results.length === 0) {
+    container.innerHTML = '<div class="mem-empty">No results found</div>';
+    return;
+  }
+  container.innerHTML = results.map((r, i) => `
+    <div class="mem-result-item">
+      <div class="mem-result-header">
+        <span class="mem-result-rank">#${i+1}</span>
+        <span class="mem-result-score">score: ${r.score.toFixed(3)}</span>
+        <span class="mem-result-embedder">${r.embedder_name}</span>
+      </div>
+      <div class="mem-result-text">${escHtml(r.text.slice(0,200))}${r.text.length>200?'…':''}</div>
+      <div class="mem-result-meta">
+        ${r.metadata.agent_type ? `<span>agent: ${r.metadata.agent_type}</span>` : ''}
+        ${r.metadata.repo_path  ? `<span>repo: ${r.metadata.repo_path}</span>`  : ''}
+        ${r.metadata.timestamp  ? `<span>${r.metadata.timestamp.slice(0,19).replace('T',' ')}</span>` : ''}
+      </div>
+    </div>
+  `).join('');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function showToast(msg, type='success') {
+  const t = document.getElementById('mem-toast');
+  t.textContent = msg;
+  t.className = `mem-toast show ${type}`;
+  setTimeout(() => t.className = 'mem-toast', 2800);
+}
+
+// ════════════════════════════════════════
+// INIT
+// ════════════════════════════════════════
+loadSampleGraphs(currentLang);
 </script>
 </body>
 </html>

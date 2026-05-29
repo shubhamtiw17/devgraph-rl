@@ -35,18 +35,18 @@ PROVIDER_DEFAULTS: dict[Provider, LLMConfig] = {
     ),
     Provider.GROQ: LLMConfig(
         provider=Provider.GROQ,
-        model="llama3-70b-8192",
+        model="llama-3.3-70b-versatile",
     ),
     Provider.GEMINI: LLMConfig(
         provider=Provider.GEMINI,
-        model="gemini-1.5-flash",
+        model="gemini-2.0-flash",
     ),
 }
 
 
 class LLMRouter:
     def __init__(self, providers: list[Provider] | None = None):
-        self.providers = providers or list(Provider)
+        self.providers = providers or [p for p in list(Provider) if os.getenv(f"{p.value.upper()}_API_KEY")]
         self._cycle    = itertools.cycle(self.providers)
         self._clients: dict[Provider, object] = {}
         self._init_clients()
