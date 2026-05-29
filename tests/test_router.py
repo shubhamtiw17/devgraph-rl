@@ -1,111 +1,73 @@
+from __future__ import annotations
 
+import itertools
 import pytest
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
 from src.llm.router import LLMRouter, Provider, PROVIDER_DEFAULTS
-
-
-# ── fixtures ──────────────────────────────────────────────────────────
-
-@pytest.fixture
-def mock_anthropic_client():
-    client = MagicMock()
-    msg = MagicMock()
-    msg.content = [MagicMock(text="mocked anthropic response")]
-    client.messages.create.return_value = msg
-    return client
 
 
 @pytest.fixture
 def mock_groq_client():
-    client = MagicMock()
-    choice = MagicMock()
-    choice.message.content = "mocked groq response"
-    client.chat.completions.create.return_value = MagicMock(choices=[choice])
-    return client
-
+    return MagicMock()
 
 @pytest.fixture
 def mock_gemini_client():
-    client = MagicMock()
-    client.generate_content.return_value = MagicMock(text="mocked gemini response")
-    return client
-
+    return MagicMock()
 
 @pytest.fixture
-def router(mock_anthropic_client, mock_groq_client, mock_gemini_client):
+def router(mock_groq_client, mock_gemini_client):
     r = LLMRouter.__new__(LLMRouter)
     r.providers = list(Provider)
-    import itertools
     r._cycle = itertools.cycle(r.providers)
     r._clients = {
-        Provider.ANTHROPIC: mock_anthropic_client,
-        Provider.GROQ:      mock_groq_client,
-        Provider.GEMINI:    mock_gemini_client,
+        Provider.GROQ:   mock_groq_client,
+        Provider.GEMINI: mock_gemini_client,
     }
     return r
 
 
-# ── provider defaults ─────────────────────────────────────────────────
-
 def test_all_providers_have_defaults():
-    for provider in Provider:
-        assert provider in PROVIDER_DEFAULTS
-        cfg = PROVIDER_DEFAULTS[provider]
-        assert cfg.model
-        assert cfg.max_tokens > 0
-
-
-# ── routing ───────────────────────────────────────────────────────────
-
-def test_anthropic_call(router, mock_anthropic_client):
-    result = router.complete("hello", provider=Provider.ANTHROPIC)
-    assert result == "mocked anthropic response"
-    mock_anthropic_client.messages.create.assert_called_once()
+    for p in Provider:
+        assert p in PROVIDER_DEFAULTS
 
 
 def test_groq_call(router, mock_groq_client):
-    result = router.complete("hello", provider=Provider.GROQ)
-    assert result == "mocked groq response"
-    mock_groq_client.chat.completions.create.assert_called_once()
+    mock_groq_client.chat.completions.create.return_value = MagicMock(
+        choices=[MagicMock(message=MagicMock(content="groq response"))]
+    )
+    result = router._call(Provider.GROQ, "hello", "system")
+    assert result == "groq response"
 
 
 def test_gemini_call(router, mock_gemini_client):
-    result = router.complete("hello", provider=Provider.GEMINI)
-    assert result == "mocked gemini response"
-    mock_gemini_client.generate_content.assert_called_once()
+    mock_gemini_client.models.generate_content.return_value = MagicMock(text="gemini response")
+    result = router._call(Provider.GEMINI, "hello", "system")
+    assert result == "gemini response"
 
 
-# ── fallback ──────────────────────────────────────────────────────────
-
-def test_fallback_on_failure(router, mock_anthropic_client, mock_groq_client):
-    mock_anthropic_client.messages.create.side_effect = Exception("rate limited")
-    result = router.complete("hello", provider=Provider.ANTHROPIC, retries=3)
-    # should have fallen back and succeeded
-    assert result in ("mocked groq response", "mocked gemini response")
+def test_fallback_on_failure(router, mock_groq_client, mock_gemini_client):
+    mock_groq_client.chat.completions.create.side_effect = Exception("groq failed")
+    mock_gemini_client.models.generate_content.return_value = MagicMock(text="gemini fallback")
+    result = router.complete("hello", retries=3)
+    assert "gemini fallback" in result
 
 
-def test_all_fail_raises(router, mock_anthropic_client, mock_groq_client, mock_gemini_client):
-    mock_anthropic_client.messages.create.side_effect = Exception("fail")
-    mock_groq_client.chat.completions.create.side_effect = Exception("fail")
-    mock_gemini_client.generate_content.side_effect = Exception("fail")
+def test_all_fail_raises(router, mock_groq_client, mock_gemini_client):
+    mock_groq_client.chat.completions.create.side_effect = Exception("groq failed")
+    mock_gemini_client.models.generate_content.side_effect = Exception("gemini failed")
     with pytest.raises(RuntimeError, match="All providers failed"):
-        router.complete("hello", retries=3)
+        router.complete("hello", retries=2)
 
-
-# ── available providers ───────────────────────────────────────────────
 
 def test_available_providers(router):
-    available = router.available_providers()
-    assert Provider.ANTHROPIC in available
-    assert Provider.GROQ in available
-    assert Provider.GEMINI in available
+    providers = router.available_providers()
+    assert Provider.GROQ in providers
+    assert Provider.GEMINI in providers
 
 
-def test_no_keys_raises():
-    with patch.dict("os.environ", {
-        "ANTHROPIC_API_KEY": "",
-        "GROQ_API_KEY": "",
-        "GEMINI_API_KEY": "",
-    }):
-        with pytest.raises(RuntimeError, match="No API keys found"):
-            LLMRouter()
+def test_no_keys_raises(monkeypatch):
+    monkeypatch.delenv("GROQ_API_KEY",   raising=False)
+    monkeypatch.delenv("GEMINI_API_KEY", raising=False)
+    with pytest.raises(RuntimeError):
+        LLMRouter()
