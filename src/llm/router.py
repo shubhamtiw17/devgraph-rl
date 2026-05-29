@@ -5,8 +5,7 @@ import time
 import itertools
 from enum import Enum
 from typing import Optional
-from dataclasses import dataclass, field
-
+from dataclasses import dataclass
 from dotenv import load_dotenv
 from rich.console import Console
 
@@ -15,9 +14,8 @@ console = Console()
 
 
 class Provider(str, Enum):
-    ANTHROPIC = "anthropic"
-    GROQ      = "groq"
-    GEMINI    = "gemini"
+    GROQ   = "groq"
+    GEMINI = "gemini"
 
 
 @dataclass
@@ -29,10 +27,6 @@ class LLMConfig:
 
 
 PROVIDER_DEFAULTS: dict[Provider, LLMConfig] = {
-    Provider.ANTHROPIC: LLMConfig(
-        provider=Provider.ANTHROPIC,
-        model="claude-3-haiku-20240307",
-    ),
     Provider.GROQ: LLMConfig(
         provider=Provider.GROQ,
         model="llama-3.3-70b-versatile",
@@ -46,24 +40,17 @@ PROVIDER_DEFAULTS: dict[Provider, LLMConfig] = {
 
 class LLMRouter:
     def __init__(self, providers: list[Provider] | None = None):
-        self.providers = providers or [p for p in list(Provider) if os.getenv(f"{p.value.upper()}_API_KEY")]
-        self._cycle    = itertools.cycle(self.providers)
+        self.providers = providers or [
+            p for p in list(Provider)
+            if os.getenv(f"{p.value.upper()}_API_KEY")
+        ]
+        self._cycle   = itertools.cycle(self.providers)
         self._clients: dict[Provider, object] = {}
         self._init_clients()
 
     # ── client setup ──────────────────────────────────────────────────
 
     def _init_clients(self):
-        if os.getenv("ANTHROPIC_API_KEY"):
-            try:
-                import anthropic
-                self._clients[Provider.ANTHROPIC] = anthropic.Anthropic(
-                    api_key=os.getenv("ANTHROPIC_API_KEY")
-                )
-                console.print("[green]✓ Anthropic ready[/green]")
-            except ImportError:
-                console.print("[yellow]! anthropic package missing — run pip install anthropic[/yellow]")
-
         if os.getenv("GROQ_API_KEY"):
             try:
                 import groq
@@ -72,24 +59,23 @@ class LLMRouter:
                 )
                 console.print("[green]✓ Groq ready[/green]")
             except ImportError:
-                console.print("[yellow]! groq package missing — run pip install groq[/yellow]")
+                console.print("[yellow]! groq package missing[/yellow]")
 
         if os.getenv("GEMINI_API_KEY"):
             try:
-                import google.generativeai as genai
-                genai.configure(api_key=os.getenv("GEMINI_API_KEY"))
-                self._clients[Provider.GEMINI] = genai.GenerativeModel(
-                    PROVIDER_DEFAULTS[Provider.GEMINI].model
+                from google import genai
+                self._clients[Provider.GEMINI] = genai.Client(
+                    api_key=os.getenv("GEMINI_API_KEY")
                 )
                 console.print("[green]✓ Gemini ready[/green]")
             except ImportError:
-                console.print("[yellow]! google-generativeai package missing[/yellow]")
+                console.print("[yellow]! google-genai package missing — run pip install google-genai[/yellow]")
 
         if not self._clients:
             raise RuntimeError(
                 "No API keys found.\n"
-                "Copy .env.example → .env and add at least one key:\n"
-                "  ANTHROPIC_API_KEY, GROQ_API_KEY, or GEMINI_API_KEY"
+                "Add at least one key to .env:\n"
+                "  GROQ_API_KEY or GEMINI_API_KEY"
             )
 
     # ── public API ────────────────────────────────────────────────────
@@ -132,26 +118,15 @@ class LLMRouter:
             p = next(self._cycle)
             if p in self._clients and p != exclude:
                 return p
-        # fallback: return any available even if same as exclude
         for p in self._clients:
             return p
-        raise RuntimeError("No providers available with API keys configured.")
+        raise RuntimeError("No providers available.")
 
     def _call(self, provider: Provider, prompt: str, system: str) -> str:
         if provider not in self._clients:
-            raise ValueError(f"No client for {provider.value} — missing API key?")
+            raise ValueError(f"No client for {provider.value}")
 
         cfg = PROVIDER_DEFAULTS[provider]
-
-        if provider == Provider.ANTHROPIC:
-            client = self._clients[provider]
-            resp = client.messages.create(
-                model=cfg.model,
-                max_tokens=cfg.max_tokens,
-                system=system,
-                messages=[{"role": "user", "content": prompt}],
-            )
-            return resp.content[0].text
 
         if provider == Provider.GROQ:
             client = self._clients[provider]
@@ -167,14 +142,18 @@ class LLMRouter:
             return resp.choices[0].message.content
 
         if provider == Provider.GEMINI:
+            from google import genai
             client = self._clients[provider]
-            resp = client.generate_content(f"{system}\n\n{prompt}")
+            resp = client.models.generate_content(
+                model=cfg.model,
+                contents=f"{system}\n\n{prompt}",
+            )
             return resp.text
 
         raise ValueError(f"Unknown provider: {provider}")
 
 
-# ── module-level singleton ─────────────────────────────────────────────
+# ── singleton ─────────────────────────────────────────────────────────
 
 _router: Optional[LLMRouter] = None
 
