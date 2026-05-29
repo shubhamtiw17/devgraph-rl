@@ -6,27 +6,28 @@ from abc import ABC, abstractmethod
 from typing import List
 
 
-# ── Base ────────────────────────────────────────────────────────────────────
-
 class BaseEmbedder(ABC):
     @property
     @abstractmethod
     def name(self) -> str:
+        ...
 
     @property
     @abstractmethod
     def dim(self) -> int:
+        ...
 
     @abstractmethod
     def is_available(self) -> bool:
+        ...
 
     @abstractmethod
     def encode(self, texts: List[str]) -> np.ndarray:
+        ...
 
     def encode_one(self, text: str) -> np.ndarray:
         return self.encode([text])[0]
 
-# ── MiniLM (local) ──────────────────────────────────────────────────────────
 
 class MiniLMEmbedder(BaseEmbedder):
     MODEL_NAME = "all-MiniLM-L6-v2"
@@ -34,7 +35,7 @@ class MiniLMEmbedder(BaseEmbedder):
 
     def __init__(self, batch_size: int = 32) -> None:
         self._batch_size = batch_size
-        self._model = None  # lazy load
+        self._model = None
 
     @property
     def name(self) -> str:
@@ -70,15 +71,12 @@ class MiniLMEmbedder(BaseEmbedder):
         return np.array(embeddings, dtype=np.float32)
 
 
-# ── Gemini ───────────────────────────────────────────────────────────────────
-
 class GeminiEmbedder(BaseEmbedder):
-
     MODEL_NAME = "models/text-embedding-004"
     _DIM = 768
 
     def __init__(self) -> None:
-        self._client = None  # lazy
+        self._client = None
 
     @property
     def name(self) -> str:
@@ -102,7 +100,6 @@ class GeminiEmbedder(BaseEmbedder):
     def encode(self, texts: List[str]) -> np.ndarray:
         if not texts:
             return np.empty((0, self._DIM), dtype=np.float32)
-
         client = self._loaded_client
         embeddings = []
         for text in texts:
@@ -112,19 +109,15 @@ class GeminiEmbedder(BaseEmbedder):
                 task_type="retrieval_document",
             )
             embeddings.append(result["embedding"])
-
         return np.array(embeddings, dtype=np.float32)
 
 
-# ── Cohere ───────────────────────────────────────────────────────────────────
-
 class CohereEmbedder(BaseEmbedder):
-
     MODEL_NAME = "embed-english-light-v3.0"
     _DIM = 384
 
     def __init__(self) -> None:
-        self._client = None  # lazy
+        self._client = None
 
     @property
     def name(self) -> str:
@@ -147,7 +140,6 @@ class CohereEmbedder(BaseEmbedder):
     def encode(self, texts: List[str]) -> np.ndarray:
         if not texts:
             return np.empty((0, self._DIM), dtype=np.float32)
-
         response = self._loaded_client.embed(
             texts=texts,
             model=self.MODEL_NAME,
@@ -155,8 +147,6 @@ class CohereEmbedder(BaseEmbedder):
         )
         return np.array(response.embeddings, dtype=np.float32)
 
-
-# ── Registry ─────────────────────────────────────────────────────────────────
 
 EMBEDDER_REGISTRY: dict[str, BaseEmbedder] = {
     "minilm": MiniLMEmbedder(),
