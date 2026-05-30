@@ -303,6 +303,24 @@ class TestTrain:
         ]
         return dpo
 
+    def _mock_imports(self):
+        """Patch heavy ML imports so tests run without peft/trl/transformers."""
+        import sys
+        mocks = {}
+        for mod in ["peft", "trl", "transformers"]:
+            if mod not in sys.modules:
+                mocks[mod] = MagicMock()
+                sys.modules[mod] = mocks[mod]
+        # Sub-modules needed by lazy imports in train()
+        for sub in ["peft.LoraConfig", "peft.get_peft_model", "peft.TaskType",
+                    "trl.DPOTrainer", "trl.DPOConfig",
+                    "transformers.AutoModelForCausalLM",
+                    "transformers.AutoTokenizer"]:
+            parts = sub.split(".")
+            if parts[0] in sys.modules:
+                pass  # already mocked
+        return mocks
+
     def test_train_returns_training_result(self, tmp_path):
         config = make_config(output_dir=str(tmp_path))
         trainer = TorchTrainer(config)
