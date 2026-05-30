@@ -301,7 +301,7 @@ class TorchTrainer:
         )
         return AutoModelForCausalLM.from_pretrained(
             self.config.base_model,
-            torch_dtype=dtype,
+            dtype=dtype,
             trust_remote_code=True,
         )
 
@@ -325,21 +325,21 @@ class TorchTrainer:
             per_device_train_batch_size=self.config.per_device_train_batch_size,
             per_device_eval_batch_size=self.config.per_device_eval_batch_size,
             learning_rate=self.config.learning_rate,
-            max_length=self.config.max_length,
-            max_prompt_length=self.config.max_prompt_length,
             logging_steps=self.config.logging_steps,
             save_steps=self.config.save_steps,
             seed=self.config.seed,
             bf16=self.config.bf16,
             fp16=self.config.fp16,
-            report_to="none",     # disable wandb/tensorboard in base config
+            report_to="none",
         )
         return DPOTrainer(
             model=model,
             args=dpo_config,
             train_dataset=dataset_dict.get("train"),
             eval_dataset=dataset_dict.get("eval"),
-            tokenizer=tokenizer,
+            processing_class=tokenizer,
+            max_length=self.config.max_length,
+            max_prompt_length=self.config.max_prompt_length,
         )
 
     def _run_training(self, dpo_trainer) -> list[EpochMetrics]:
