@@ -2,7 +2,21 @@
 
 **Graph-Augmented RLHF Multi-Agent Autonomous Software Engineering System**
 
-A production-grade system that combines AST graph intelligence, semantic memory, safe code execution, multi-dimensional reward modelling, and DPO training into a single unified visualiser — with a context-aware AI assistant powered by a live LLM router.
+[![CI](https://github.com/shubhamtiw17/devgraph-rl/actions/workflows/ci.yml/badge.svg)](https://github.com/shubhamtiw17/devgraph-rl/actions/workflows/ci.yml)
+[![Python 3.11](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)](https://www.python.org/downloads/release/python-3110/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.0+-EE4C2C?logo=pytorch&logoColor=white)](https://pytorch.org)
+[![Groq](https://img.shields.io/badge/Groq-llama--3.3--70b-F55036?logo=groq&logoColor=white)](https://console.groq.com)
+[![Gemini](https://img.shields.io/badge/Gemini-2.0--flash-4285F4?logo=google&logoColor=white)](https://aistudio.google.com)
+[![D3.js](https://img.shields.io/badge/D3.js-v7-F9A03C?logo=d3.js&logoColor=white)](https://d3js.org)
+[![FAISS](https://img.shields.io/badge/FAISS-Vector%20Store-0467DF?logo=meta&logoColor=white)](https://github.com/facebookresearch/faiss)
+[![scikit-learn](https://img.shields.io/badge/scikit--learn-1.5+-F7931E?logo=scikit-learn&logoColor=white)](https://scikit-learn.org)
+[![Keras](https://img.shields.io/badge/Keras-3.x%20JAX-D00000?logo=keras&logoColor=white)](https://keras.io)
+[![License: MIT](https://img.shields.io/badge/License-MIT-22c55e?logo=opensourceinitiative&logoColor=white)](LICENSE)
+[![Tests](https://img.shields.io/badge/Tests-562%20passed-22c55e?logo=pytest&logoColor=white)](tests/)
+[![Code style: black](https://img.shields.io/badge/Code%20style-black-000000?logo=python&logoColor=white)](https://github.com/psf/black)
+
+A production-grade system that combines AST graph intelligence, semantic memory, safe code execution, multi-dimensional reward modelling, and DPO training into a single unified visualiser with a context-aware AI assistant powered by a live LLM router.
 
 ---
 
