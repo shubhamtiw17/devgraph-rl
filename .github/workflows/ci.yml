@@ -17,6 +17,7 @@ jobs:
         run: |
           pip install -e ".[dev]"
           pip install -e ".[graphs]"
+          pip install datasets>=2.20.0
       - name: Lint
         run: ruff check src/ || true
       - name: Test

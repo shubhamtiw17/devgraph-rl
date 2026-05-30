@@ -1,3 +1,10 @@
+"""
+src/training/__init__.py
+
+Training package — lazy exports.
+Heavy deps (datasets, torch, keras) are only imported when actually used.
+"""
+
 from src.training.sklearn_analyzer import (
     SklearnAnalyzer,
     ScoreDistribution,
@@ -13,13 +20,6 @@ from src.training.data_collector import (
     DataCollector,
     CollectionResult,
     AnalyzedCollection,
-)
-
-from src.training.dataset_builder import (
-    DatasetBuilder,
-    BuildResult,
-    SplitResult,
-    get_builder,
 )
 
 from src.training.keras_experiments import (
@@ -44,20 +44,19 @@ from src.training.trainer import (
     PipelineStage,
 )
 
+def get_dataset_builder(*args, **kwargs):
+    """Lazy import — only loads datasets library when called."""
+    from src.training.dataset_builder import DatasetBuilder, BuildResult, SplitResult, get_builder
+    return DatasetBuilder(*args, **kwargs)
+
 __all__ = [
-    # sklearn
     "SklearnAnalyzer", "ScoreDistribution", "ClusterResult",
     "TrainingPair", "PairSelectionResult", "EmbeddingAudit",
     "FeatureImportanceResult", "get_analyzer",
-    # collector
     "DataCollector", "CollectionResult", "AnalyzedCollection",
-    # builder
-    "DatasetBuilder", "BuildResult", "SplitResult", "get_builder",
-    # keras
     "KerasExperiments", "ExperimentConfig", "ExperimentRun",
     "SweepResult", "build_configs_from_space",
-    # torch
     "TorchTrainer", "TrainerConfig", "TrainingResult", "EpochMetrics",
-    # orchestrator
     "Trainer", "PipelineResult", "PipelineStatus", "PipelineStage",
+    "get_dataset_builder",
 ]
