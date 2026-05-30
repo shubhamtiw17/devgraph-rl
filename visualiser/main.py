@@ -6,14 +6,15 @@ from visualiser.routers.memory import router as memory_router
 from visualiser.routers.repo import router as repo_router
 from visualiser.routers.sandbox import router as sandbox_router
 from visualiser.routers.rewards import router as rewards_router
+from visualiser.routers.training import router as training_router
 
 app = FastAPI(title="DevGraph-RL Visualiser", version="1.0.0")
-
 app.include_router(graph_router, prefix="/api")
 app.include_router(memory_router)
 app.include_router(repo_router)
 app.include_router(sandbox_router)
 app.include_router(rewards_router)
+app.include_router(training_router)
 
 app.mount("/static", StaticFiles(directory="visualiser/static"), name="static")
 
