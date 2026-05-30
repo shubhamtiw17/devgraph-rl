@@ -8,32 +8,32 @@ A production-grade system that combines AST graph intelligence, semantic memory,
 
 ## Screenshots
 
-### Graphs Tab — AST · Dependency · Call Graph
+### Graphs Tab: AST · Dependency · Call Graph
 Interactive D3.js force-directed graphs with zoom, drag, and tooltips. Three simultaneous views of any loaded GitHub repo.
 
 ![Graphs Tab](docs/images/graph.png)
 
-### Memory Tab — Semantic Vector Store
+### Memory Tab: Semantic Vector Store
 FAISS-backed memory with three parallel embedders (MiniLM local, Gemini, Cohere). Store, search, and compare embedders side by side.
 
 ![Memory Tab](docs/images/memory.png)
 
-### Sandbox Tab — Safe Code Execution
+### Sandbox Tab: Safe Code Execution
 Security-validated subprocess execution with 30s timeout. Integrated pytest runner — test code imports from `solution.py` automatically.
 
 ![Sandbox Tab](docs/images/sandbox.png)
 
-### Rewards Tab — Multi-Dimensional Scorer
+### Rewards Tab: Multi-Dimensional Scorer
 5-dimension reward model with score trend chart and top-N leaderboard. 38 scored outputs shown with 91% best score.
 
 ![Rewards Tab](docs/images/reward.png)
 
-### ML Lab Tab — Full RLHF Pipeline
+### ML Lab Tab: Full RLHF Pipeline
 Three-panel pipeline: sklearn analysis → Keras hyperparameter sweep → PyTorch DPO training. Runs on free Colab T4 GPU.
 
 ![ML Lab Tab](docs/images/ml_lab.png)
 
-### Assistant Tab — Context-Aware AI
+### Assistant Tab: Context-Aware AI
 Live LLM assistant (Groq + Gemini) with auto-detected Generate/Improve/Guide modes. Reads repo state, memory, and reward history as context.
 
 ![Assistant Tab](docs/images/assistant.png)
@@ -99,16 +99,16 @@ Live LLM assistant (Groq + Gemini) with auto-detected Generate/Improve/Guide mod
 ### Phase 6: Sandbox
 - Security validation before any execution (blocks `os.system`, `subprocess`, `eval`, file writes outside `/tmp`, etc.)
 - Isolated subprocess execution with 30-second timeout
-- Integrated pytest runner — test code imports from `solution.py` automatically
+- Integrated pytest runner, test code imports from `solution.py` automatically
 - Supports Python, JavaScript, Java, C++
 
 ### Phase 7: Reward Model
 - Five scoring dimensions with weighted aggregation:
-  - **Correctness** (0.35) — execution success, test pass rate
-  - **Code Quality** (0.25) — style, complexity, type hints, docstrings
-  - **Task Completion** (0.20) — requirement coverage
-  - **Efficiency** (0.10) — algorithmic complexity heuristics
-  - **Security** (0.10) — dangerous pattern detection
+  - **Correctness** (0.35) : execution success, test pass rate
+  - **Code Quality** (0.25) : style, complexity, type hints, docstrings
+  - **Task Completion** (0.20) : requirement coverage
+  - **Efficiency** (0.10) : algorithmic complexity heuristics
+  - **Security** (0.10) : dangerous pattern detection
 - Persistent JSONL store with trend tracking, statistics, top-N queries
 - Scored outputs feed directly into Phase 8 training pairs
 
@@ -145,9 +145,9 @@ Epoch 3: reward_delta = +0.438   ← 10x improvement across epochs
 Context-aware AI assistant embedded in the visualiser.
 
 **Three auto-detected modes** (no manual selection needed):
-- **Generate** — writes production-quality code with type hints, docstrings, error handling; validates through sandbox; scores with reward model; auto-stores high-scoring outputs to memory
-- **Improve** — scores original code, refactors it, scores again, reports the delta
-- **Guide** — explains, debugs, onboards; adapts tone to detected expertise level (beginner/intermediate/expert)
+- **Generate** : writes production-quality code with type hints, docstrings, error handling; validates through sandbox; scores with reward model; auto-stores high-scoring outputs to memory
+- **Improve** : scores original code, refactors it, scores again, reports the delta
+- **Guide** : explains, debugs, onboards; adapts tone to detected expertise level (beginner/intermediate/expert)
 
 **Context awareness:**
 - Reads loaded repo name and language from the repo manager
@@ -178,8 +178,8 @@ Context-aware AI assistant embedded in the visualiser.
 ### Prerequisites
 - Python 3.11
 - WSL2 (Ubuntu) or Linux
-- Groq API key — free at [console.groq.com](https://console.groq.com)
-- Gemini API key — optional, free at [aistudio.google.com](https://aistudio.google.com)
+- Groq API key : free at [console.groq.com](https://console.groq.com)
+- Gemini API key : optional, free at [aistudio.google.com](https://aistudio.google.com)
 
 ### Install
 
@@ -328,5 +328,5 @@ devgraph-rl/
 
 GitHub Actions runs on every push:
 - Install `.[dev,graphs]` + training deps
-- `pytest tests/` — all 562 tests must pass
+- `pytest tests/` : all 562 tests must pass
 - No GPU required (torch training uses lazy imports, CI safe)
