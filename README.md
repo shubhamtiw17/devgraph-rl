@@ -6,6 +6,40 @@ A production-grade system that combines AST graph intelligence, semantic memory,
 
 ---
 
+## Screenshots
+
+### Graphs Tab — AST · Dependency · Call Graph
+Interactive D3.js force-directed graphs with zoom, drag, and tooltips. Three simultaneous views of any loaded GitHub repo.
+
+![Graphs Tab](docs/images/graph.png)
+
+### Memory Tab — Semantic Vector Store
+FAISS-backed memory with three parallel embedders (MiniLM local, Gemini, Cohere). Store, search, and compare embedders side by side.
+
+![Memory Tab](docs/images/memory.png)
+
+### Sandbox Tab — Safe Code Execution
+Security-validated subprocess execution with 30s timeout. Integrated pytest runner — test code imports from `solution.py` automatically.
+
+![Sandbox Tab](docs/images/sandbox.png)
+
+### Rewards Tab — Multi-Dimensional Scorer
+5-dimension reward model with score trend chart and top-N leaderboard. 38 scored outputs shown with 91% best score.
+
+![Rewards Tab](docs/images/reward.png)
+
+### ML Lab Tab — Full RLHF Pipeline
+Three-panel pipeline: sklearn analysis → Keras hyperparameter sweep → PyTorch DPO training. Runs on free Colab T4 GPU.
+
+![ML Lab Tab](docs/images/ml_lab.png)
+
+### Assistant Tab — Context-Aware AI
+Live LLM assistant (Groq + Gemini) with auto-detected Generate/Improve/Guide modes. Reads repo state, memory, and reward history as context.
+
+![Assistant Tab](docs/images/assistant.png)
+
+---
+
 ## Architecture
 
 ```
@@ -76,7 +110,7 @@ A production-grade system that combines AST graph intelligence, semantic memory,
   - **Efficiency** (0.10) — algorithmic complexity heuristics
   - **Security** (0.10) — dangerous pattern detection
 - Persistent JSONL store with trend tracking, statistics, top-N queries
-- Scored outputs available as training pairs for Phase 8
+- Scored outputs feed directly into Phase 8 training pairs
 
 ### Phase 8: RLHF Training Pipeline
 Three-stage ML pipeline, each with a dedicated visualiser panel:
@@ -86,7 +120,6 @@ Three-stage ML pipeline, each with a dedicated visualiser panel:
 - KMeans clustering into high/medium/low quality buckets
 - Feature importance via random forest on scoring dimensions
 - Pair selection: identifies (chosen, rejected) pairs with configurable score delta threshold
-- PCA audit and silhouette scoring
 
 **Keras Sweep**
 - Hyperparameter sweep over learning rate, batch size, hidden dim, dropout
@@ -111,16 +144,16 @@ Epoch 3: reward_delta = +0.438   ← 10x improvement across epochs
 ### Phase 9: Assistant Tab
 Context-aware AI assistant embedded in the visualiser.
 
-**Three auto-detected modes:**
+**Three auto-detected modes** (no manual selection needed):
 - **Generate** — writes production-quality code with type hints, docstrings, error handling; validates through sandbox; scores with reward model; auto-stores high-scoring outputs to memory
 - **Improve** — scores original code, refactors it, scores again, reports the delta
 - **Guide** — explains, debugs, onboards; adapts tone to detected expertise level (beginner/intermediate/expert)
 
 **Context awareness:**
 - Reads loaded repo name and language from the repo manager
-- Pulls recent semantic memories as context
+- Pulls recent semantic memories as context for every LLM call
 - Shows reward history statistics in the context bar
-- Mode badge updates live as you type
+- Mode badge (GENERATE/IMPROVE/GUIDE) updates live as you type
 
 ---
 
@@ -145,8 +178,8 @@ Context-aware AI assistant embedded in the visualiser.
 ### Prerequisites
 - Python 3.11
 - WSL2 (Ubuntu) or Linux
-- Groq API key (free at [console.groq.com](https://console.groq.com))
-- Gemini API key (optional, free at [aistudio.google.com](https://aistudio.google.com))
+- Groq API key — free at [console.groq.com](https://console.groq.com)
+- Gemini API key — optional, free at [aistudio.google.com](https://aistudio.google.com)
 
 ### Install
 
@@ -193,18 +226,18 @@ pytest tests/ -v
 
 ## RLHF Training on Colab (Free GPU)
 
-1. Score at least 5–10 outputs in the **Rewards tab** (different quality levels for the same task)
+1. Score at least 5–10 outputs in the **Rewards tab** across different quality levels for the same task
 2. Copy `reward_history.jsonl` to Windows:
    ```bash
    cp data/vector_store/reward_history.jsonl /mnt/c/Users/YOUR_USERNAME/Downloads/
    ```
-3. Open `notebooks/train_colab.ipynb` in Google Colab with a **T4 GPU**
-4. Run cells top to bottom — Cell 1 installs deps, then **Runtime → Restart runtime**, then continue
-5. Upload `reward_history.jsonl` when prompted
+3. Open `notebooks/train_colab.ipynb` in Google Colab with **Runtime → T4 GPU**
+4. Run Cell 1 to install deps, then **Runtime → Restart runtime**, then continue from Cell 2
+5. Upload `reward_history.jsonl` when Cell 4 prompts
 6. Download `training_result.json` from Cell 9
 7. Copy to `data/checkpoints/training_result.json` and click **Load History** in the ML Lab tab
 
-**Training time:** ~1–3 hours on free T4 depending on dataset size.
+**Training time:** 1–3 hours on free T4 depending on dataset size.
 
 ---
 
@@ -222,16 +255,16 @@ devgraph-rl/
 │   └── training/              # sklearn, keras, torch training modules
 ├── visualiser/
 │   ├── main.py                # FastAPI app
-│   ├── routers/               # API endpoints (graphs, memory, sandbox, rewards, training, assistant)
+│   ├── routers/               # graphs, memory, sandbox, rewards, training, assistant
 │   ├── services/              # graph_builder, repo_manager, query_engine, assistant_engine
-│   └── static/
-│       └── index.html         # Single-file 6-tab visualiser
+│   └── static/index.html      # Single-file 6-tab visualiser
 ├── tests/                     # 562 tests
 ├── notebooks/
 │   └── train_colab.ipynb      # GPU training notebook
 ├── data/
 │   ├── vector_store/          # FAISS indexes + reward_history.jsonl
 │   └── checkpoints/           # DPO training results
+├── docs/images/               # Screenshots
 ├── pyproject.toml
 └── .env
 ```
@@ -261,13 +294,13 @@ devgraph-rl/
 | Endpoint | Method | Description |
 |---|---|---|
 | `/api/sandbox/validate` | POST | Validate code for dangerous patterns |
-| `/api/sandbox/run` | POST | Execute code (with optional tests) |
+| `/api/sandbox/run` | POST | Execute code with optional pytest tests |
 
 ### Rewards
 | Endpoint | Method | Description |
 |---|---|---|
 | `/api/rewards/score` | POST | Score an agent output |
-| `/api/rewards/stats` | GET | Statistics and trend |
+| `/api/rewards/stats` | GET | Statistics and score trend |
 | `/api/rewards/history` | GET | Recent scored outputs |
 | `/api/rewards/top` | GET | Top N outputs by score |
 | `/api/rewards/clear` | DELETE | Clear reward history |
@@ -275,10 +308,10 @@ devgraph-rl/
 ### Training
 | Endpoint | Method | Description |
 |---|---|---|
-| `/api/training/analyze` | POST | Run sklearn analysis |
+| `/api/training/analyze` | POST | Run sklearn analysis and pair selection |
 | `/api/training/sweep` | POST | Run Keras hyperparameter sweep |
 | `/api/training/run` | POST | Run full training pipeline |
-| `/api/training/status` | GET | Current pipeline stage |
+| `/api/training/status` | GET | Current pipeline stage and counts |
 | `/api/training/history` | GET | Last training result |
 
 ### Assistant
@@ -296,4 +329,4 @@ devgraph-rl/
 GitHub Actions runs on every push:
 - Install `.[dev,graphs]` + training deps
 - `pytest tests/` — all 562 tests must pass
-- No GPU required for CI (torch training uses lazy imports)
+- No GPU required (torch training uses lazy imports, CI safe)
