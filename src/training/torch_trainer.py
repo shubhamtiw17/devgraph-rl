@@ -325,6 +325,7 @@ class TorchTrainer:
             per_device_train_batch_size=self.config.per_device_train_batch_size,
             per_device_eval_batch_size=self.config.per_device_eval_batch_size,
             learning_rate=self.config.learning_rate,
+            max_length=self.config.max_length,
             logging_steps=self.config.logging_steps,
             save_steps=self.config.save_steps,
             seed=self.config.seed,
@@ -338,8 +339,6 @@ class TorchTrainer:
             train_dataset=dataset_dict.get("train"),
             eval_dataset=dataset_dict.get("eval"),
             processing_class=tokenizer,
-            max_length=self.config.max_length,
-            max_prompt_length=self.config.max_prompt_length,
         )
 
     def _run_training(self, dpo_trainer) -> list[EpochMetrics]:
